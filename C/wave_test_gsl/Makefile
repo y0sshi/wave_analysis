@@ -1,7 +1,9 @@
 WAVE = wave
 BIN = wave_test_gsl
 OPT = -lm -lgsl -lgslcblas -W
+
 FILENAME = "../../data/304 Feldschlacht III.wav"
+#FILENAME = "../../data/sine_00100/sine_-06_05_00500.wav"
 
 default: all
 

@@ -41,24 +41,34 @@ int main(int argc, char *argv[]) {
 
   /* split channel data */
   int cnt_l, cnt_r;
-  wave.wave_l = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / 2);
-  wave.wave_r = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / 2);
+  if (wave.channel == 2) {
+    wave.wave_l = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
+    wave.wave_r = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
 
-  cnt_l = 0;
-  cnt_r = 0;
-  for (i=0; i<(int)wave.samplings; i++) {
-    if (i % 2 == 0) {
-      wave.wave_l[cnt_l] = wave.data[i];
-      cnt_l++;
-    } else {
-      wave.wave_r[cnt_r] = wave.data[i];
-      cnt_r++;
+    cnt_l = 0;
+    cnt_r = 0;
+    for (i=0; i<(int)wave.samplings; i++) {
+      if (i % 2 == 0) {
+        wave.wave_l[cnt_l] = wave.data[i];
+        cnt_l++;
+      } else {
+        wave.wave_r[cnt_r] = wave.data[i];
+        cnt_r++;
+      }
+    }
+  } else if (wave.channel == 1) {
+    wave.wave_l = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
+    wave.wave_r = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
+
+    for (i=0; i<(int)wave.samplings; i++) {
+      wave.wave_l[i] = wave.data[i];
+      wave.wave_r[i] = 0;
     }
   }
 
   /* N point sampling */
   int N = 2048;
-  int start = 65536;
+  int start = 32768;
   int temp_l, temp_r;
   sample_t sample;
   sample.wave_l = (double*)malloc(sizeof(double)*N);

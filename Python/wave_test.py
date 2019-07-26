@@ -9,11 +9,14 @@ import matplotlib.pyplot as plt
 argv = sys.argv
 argc = len(argv)
 
-filename = "../data/304 Feldschlacht III.wav"
-
-if argc == 2:
-    print("argument: ", argv[1])
+try:
     filename = argv[1]
+except:
+    print("argument error...")
+    print("please input")
+    print("  python3", argv[0], "[FILENAME]")
+    sys.exit()
+
 
 ## load wavefile
 wp = wave.open(filename, "rb")
@@ -41,6 +44,9 @@ elif samplewidth == 4:
 if channels == 2:
     data_l = data[::channels]
     data_r = data[1::channels]
+elif channels == 1:
+    data_l = data
+    data_r = [0] * frames
 
 ## Fourier translation
 N = 2400
@@ -58,14 +64,14 @@ print("done!")
 # plot wave
 
 # channel 1
-plt.subplot(channels, 2, 1)
+plt.subplot(2, 2, 1)
 plt.xlabel("time [sec]")
 plt.ylabel("Amplitude")
 plt.plot(sample_l, label="left wave")
 plt.legend()
 
 # channel 2
-plt.subplot(channels, 2, 2)
+plt.subplot(2, 2, 2)
 plt.xlabel("time [sec]")
 plt.ylabel("Amplitude")
 plt.plot(sample_r, label="right wave")
@@ -74,7 +80,7 @@ plt.legend()
 # plot spectrum
 
 # channel 1
-plt.subplot(channels, 2, 3)
+plt.subplot(2, 2, 3)
 plt.xlabel("Frequency [Hz]")
 plt.ylabel("Amplitude")
 plt.plot(spectrum_l[0:1023], label="left spectrum")
@@ -82,7 +88,7 @@ plt.xscale('log')
 plt.legend()
 
 # channel 2
-plt.subplot(channels, 2, 4)
+plt.subplot(2, 2, 4)
 plt.xlabel("Frequency [Hz]")
 plt.ylabel("Amplitude")
 plt.plot(spectrum_r[0:1023], label="right spectrum")
