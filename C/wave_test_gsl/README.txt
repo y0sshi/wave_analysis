@@ -1,1 +1,1 @@
-In order to run this program you need to have the library "gsl-2.5" installed.
+In order to run this program, "gnuplot" and library "gsl-2.5" must be installed.
