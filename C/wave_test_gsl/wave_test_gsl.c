@@ -5,8 +5,6 @@
 #include <gsl/gsl_fft_real.h>
 #include "wave.h"
 
-#define SAMPLES 131072
-
 void wave_plot(FILE *gp, sample_t sample);
 void spectrum_plot(FILE *gp, sample_t sample);
 
@@ -32,7 +30,9 @@ int main(int argc, char *argv[]) {
   }
 
   load_wave_header(fp, &wave);
-  print_wave_header(wave);
+  printf("\n/* format chunk */\n");
+  print_wave_format(wave);
+  printf("\n");
   wave.data = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings);
   load_wave_data(fp, &wave);
   fclose(fp);
@@ -42,12 +42,12 @@ int main(int argc, char *argv[]) {
   /* split channel data */
   int cnt_l, cnt_r;
   if (wave.channel == 2) {
-    wave.wave_l = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
-    wave.wave_r = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
+    wave.wave_l = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings);
+    wave.wave_r = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings);
 
     cnt_l = 0;
     cnt_r = 0;
-    for (i=0; i<(int)wave.samplings; i++) {
+    for (i=0; i<(int)wave.samplings * 2; i++) {
       if (i % 2 == 0) {
         wave.wave_l[cnt_l] = wave.data[i];
         cnt_l++;
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 
   /* N point sampling */
   int N = 2048;
-  int start = 32768;
+  unsigned int start = wave.samplings / 4;
   int temp_l, temp_r;
   sample_t sample;
   sample.wave_l = (double*)malloc(sizeof(double)*N);
@@ -91,8 +91,10 @@ int main(int argc, char *argv[]) {
   pclose(gp);
 
   /* N point FFT */
+  printf("%d point FFT...\n", N);
   gsl_fft_real_radix2_transform(sample.wave_l, 1, N);
   gsl_fft_real_radix2_transform(sample.wave_r, 1, N);
+  printf("done!!\n");
 
   /* plot spectrum */
   if ((gp = popen("gnuplot -persist", "w")) == NULL) {

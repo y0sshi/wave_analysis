@@ -3,15 +3,13 @@
 #include <string.h>
 #include "wave.h"
 
-#define FMT_SIZE 16
-
-void print_wave_header(wave_t wave) {
+void print_wave_format(wave_t wave) {
   printf("RIFF header      : %s\n", wave.RIFF);
   printf("file syze        : %d [Bytes]\n", wave.FILESIZE);
   printf("WAVE header      : %s\n", wave.WAVE);
   printf("formatID         : %04x\n", wave.formatID);
   printf("channel          : %d\n", wave.channel);
-  printf("sampling rate    : %d [kHz]\n", wave.sampling_rate);
+  printf("sampling rate    : %.1lf [kHz]\n", (double)wave.sampling_rate / 1000);
   printf("data velocity    : %d\n", wave.data_velocity);
   printf("block size       : %d [Bytes]\n", wave.block_size);
   printf("bit per sampling : %d [bit/samplings]\n", wave.bps);
@@ -59,7 +57,7 @@ int load_wave_header(FILE *fp, wave_t *wave) {
 }
 
 int read_fmt_chunk(FILE *fp, wave_t *wave) {
-  int temp;
+  int temp, FMT_SIZE;
   char *buff;
 
   /* format chunk */
@@ -69,6 +67,18 @@ int read_fmt_chunk(FILE *fp, wave_t *wave) {
   fread(&wave->data_velocity, 4, 1, fp);
   fread(&wave->block_size, 2, 1, fp);
   fread(&wave->bps, 2, 1, fp);
+
+  /* extension */
+  wave->extension_size = 0;
+  FMT_SIZE = 16;
+  if (wave->formatID != 0x0001) {
+    fread(&wave->extension_size, 2, 1, fp);
+    FMT_SIZE += (wave->extension_size + 2);
+  }
+
+  buff = (char*)malloc(sizeof(char)*wave->extension_size);
+  fread(buff, 1, wave->extension_size, fp);
+  free(buff);
 
   temp = wave->chunk_Bytes - FMT_SIZE;
   buff = (char*)malloc(sizeof(char)*temp);

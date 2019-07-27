@@ -31,7 +31,7 @@ typedef struct sample_t {
   double   sampling_period;
 } sample_t;
 
-void print_wave_header(wave_t wave);
+void print_wave_format(wave_t wave);
 int load_wave_header(FILE *fp, wave_t *wave);
 int load_wave_data(FILE *fp, wave_t *wave);
 int read_fmt_chunk(FILE *fp, wave_t *wave);
