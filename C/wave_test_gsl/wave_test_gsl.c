@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
   printf("\n/* format chunk */\n");
   print_wave_format(wave);
   printf("\n");
-  wave.data = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings);
+  wave.data = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings * wave.channel);
   load_wave_data(fp, &wave);
   fclose(fp);
 
@@ -57,8 +57,8 @@ int main(int argc, char *argv[]) {
       }
     }
   } else if (wave.channel == 1) {
-    wave.wave_l = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
-    wave.wave_r = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings / wave.channel);
+    wave.wave_l = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings);
+    wave.wave_r = (uint16_t *)malloc(sizeof(uint16_t) * wave.samplings);
 
     for (i=0; i<(int)wave.samplings; i++) {
       wave.wave_l[i] = wave.data[i];
