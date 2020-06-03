@@ -8,13 +8,13 @@ FILENAME = "../../data/newtype.wav"
 default: run
 
 run: $(BIN)
+	./$(BIN) $(FILENAME)
 
 $(WAVE).o: $(WAVE).c
 	gcc -c $(WAVE).c -o $(WAVE).o 
 
 $(BIN): $(BIN).c $(WAVE).o
 	gcc $(BIN).c $(WAVE).o -o $(BIN) $(OPT)
-	./$(BIN) $(FILENAME)
 
 clean:
 	rm -f $(WAVE).o $(BIN)
